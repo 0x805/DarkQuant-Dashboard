@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DarkQuant Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(0, 255, 127, 0.05);
+            border: 1px solid rgba(0, 255, 127, 0.2);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ff7f, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* KPI Section */
+        .kpi-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ff7f, #00d4ff);
+        }
+
+        .kpi-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 127, 0.2);
+        }
+
+        .kpi-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: #888;
+            font-weight: 500;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ff7f, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+            height: 400px;
+            min-height: 400px;
+            max-height: 400px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .svg-chart {
+            width: 100%;
+            height: 300px;
+            max-height: 300px;
+            min-height: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(0, 255, 127, 0.2);
+            overflow: hidden;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .chart-line {
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .chart-point {
+            fill: #00ff7f;
+            stroke: #fff;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-point:hover {
+            fill: #fff;
+            stroke: #00ff7f;
+            r: 8;
+        }
+
+        .chart-area {
+            fill: url(#gradient1);
+            opacity: 0.3;
+        }
+
+        .chart-text {
+            fill: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+
+        .chart-grid {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+        }
+
+
+
+        /* Refresh Button */
+        .refresh-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #00ff7f, #00d4ff);
+            border: none;
+            color: #000;
+            padding: 15px 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 255, 127, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 127, 0.4);
+        }
+
+        /* Table Styles */
+        .table-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .data-table th {
+            background: rgba(0, 255, 127, 0.1);
+            color: #00ff7f;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.8rem;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .data-table tr:hover {
+            background: rgba(0, 255, 127, 0.05);
+        }
+
+        /* Status Messages */
+        .status-message {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .loading-message {
+            color: #00ff7f;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .kpi-section {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 6px;
+            }
+        }
+
+        /* Cell formatting */
+        .currency-cell {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+
+        .percentage-cell {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 500;
+        }
+
+        .number-cell {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">DarkQuant Dashboard</h1>
+        </div>
+
+        <!-- KPI Section -->
+        <div class="kpi-section" id="kpiSection">
+            <div class="kpi-box">
+                <div class="kpi-label">Total Deposits</div>
+                <div class="kpi-value" id="deposits">-</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Total Value Locked</div>
+                <div class="kpi-value" id="tvl">-</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Profit & Loss</div>
+                <div class="kpi-value" id="pnl">-</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Portfolio Growth</div>
+                <div class="kpi-value" id="growth">-</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3 class="chart-title">Fund Share Distribution</h3>
+                <div id="fundShareChart" class="svg-chart"></div>
+            </div>
+            <div class="chart-container">
+                <h3 class="chart-title">Capital Gains vs Deposits</h3>
+                <div id="gainsChart" class="svg-chart"></div>
+            </div>
+        </div>
+
+        <!-- Refresh Section -->
+        <div class="refresh-section">
+            <button class="refresh-btn" onclick="loadData()">
+                🔄 Refresh Live Data
+            </button>
+            <button class="refresh-btn" onclick="createCharts()" style="margin-left: 10px; background: linear-gradient(45deg, #ff6b6b, #ffd93d);">
+                📊 Create Charts
+            </button>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="table-section" id="tableSection">
+            <div class="status-message loading-message" id="loadingMessage">
+                Loading data from Cosmos...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - Edit these values to change the data source
+        const SHEET_ID = '1tutsElFcMq8wed0qruNdoj6j9Bac0Jow6Oaray_CJIQ';
+        const GID = '0'; // Default sheet (first sheet)
+        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:json`;
+
+        // Global variables
+        let allData = [];
+        let filteredData = [];
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Try to load live data first, with fallback to sample data
+            loadData();
+            
+            // If live data fails, show timeout message and load sample data
+            setTimeout(() => {
+                if (allData.length === 0) {
+                    console.log('Live data failed, showing timeout message...');
+                    showLoadingTimeout();
+                }
+            }, 8000);
+        });
+
+        // Load data from Cosmos
+        async function loadData() {
+            // Reset charts flag
+            chartsCreated = false;
+            
+            // Show loading message
+            document.getElementById('tableSection').innerHTML = `
+                <div class="status-message loading-message">
+                    Loading live data from Cosmos...
+                </div>
+            `;
+            
+            try {
+                // Try multiple approaches to bypass CORS
+                const approaches = [
+                    // Approach 1: Direct CSV export
+                    async () => {
+                        const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+                        console.log('Trying direct CSV export:', csvUrl);
+                        const response = await fetch(csvUrl);
+                        if (!response.ok) throw new Error(`CSV export failed: ${response.status}`);
+                        const csvText = await response.text();
+                        return parseCSV(csvText);
+                    },
+                    
+                    // Approach 2: Google Visualization API with different format
+                    async () => {
+                        const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${GID}&tqx=out:csv`;
+                        console.log('Trying gviz CSV:', gvizUrl);
+                        const response = await fetch(gvizUrl);
+                        if (!response.ok) throw new Error(`gviz CSV failed: ${response.status}`);
+                        const csvText = await response.text();
+                        return parseCSV(csvText);
+                    },
+                    
+                    // Approach 3: Public JSON feed
+                    async () => {
+                        const jsonUrl = `https://spreadsheets.google.com/feeds/list/${SHEET_ID}/${GID}/public/values?alt=json`;
+                        console.log('Trying public JSON feed:', jsonUrl);
+                        const response = await fetch(jsonUrl);
+                        if (!response.ok) throw new Error(`JSON feed failed: ${response.status}`);
+                        const jsonData = await response.json();
+                        return processPublicJSON(jsonData);
+                    },
+                    
+                    // Approach 4: Alternative CORS proxy
+                    async () => {
+                        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`)}`;
+                        console.log('Trying allorigins proxy:', proxyUrl);
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) throw new Error(`Proxy failed: ${response.status}`);
+                        const csvText = await response.text();
+                        return parseCSV(csvText);
+                    }
+                ];
+                
+                // Try each approach until one works
+                for (let i = 0; i < approaches.length; i++) {
+                    try {
+                        console.log(`Trying approach ${i + 1}...`);
+                        const data = await approaches[i]();
+                        if (data && data.length > 0) {
+                            console.log(`Approach ${i + 1} succeeded! Found ${data.length} rows`);
+                            processCSVData(data);
+                            return;
+                        }
+                    } catch (error) {
+                        console.log(`Approach ${i + 1} failed:`, error.message);
+                        continue;
+                    }
+                }
+                
+                throw new Error('All approaches failed');
+                
+            } catch (error) {
+                console.error('All data loading approaches failed:', error);
+                showError('Unable to load live data from Cosmos. This is likely due to CORS restrictions. The sample data below shows your actual sheet data.');
+            }
+        }
+
+        // This function is no longer needed as we've implemented a better approach above
+
+        // Process public JSON feed from Cosmos
+        function processPublicJSON(jsonData) {
+            const entries = jsonData.feed.entry;
+            const data = [];
+            
+            if (entries && entries.length > 0) {
+                // Extract headers from the first entry
+                const firstEntry = entries[0];
+                const headers = Object.keys(firstEntry).filter(key => key.startsWith('gsx$'));
+                
+                entries.forEach(entry => {
+                    const row = {};
+                    headers.forEach(header => {
+                        const cleanHeader = header.replace('gsx$', '');
+                        row[cleanHeader] = entry[header] ? entry[header].$t : '';
+                    });
+                    data.push(row);
+                });
+            }
+            
+            return data;
+        }
+
+        // Process direct JSON format from Cosmos
+        function processDirectJSON(jsonData) {
+            const entries = jsonData.feed.entry;
+            const data = [];
+            
+            if (entries && entries.length > 0) {
+                // Extract headers from the first entry
+                const firstEntry = entries[0];
+                const headers = Object.keys(firstEntry).filter(key => key.startsWith('gsx$'));
+                
+                entries.forEach(entry => {
+                    const row = {};
+                    headers.forEach(header => {
+                        const cleanHeader = header.replace('gsx$', '');
+                        row[cleanHeader] = entry[header] ? entry[header].$t : '';
+                    });
+                    data.push(row);
+                });
+            }
+            
+            return data;
+        }
+
+        // Parse CSV data with proper currency handling
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    // Handle CSV parsing more robustly
+                    const values = parseCSVLine(lines[i]);
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        let value = values[index] || '';
+                        
+                        // Clean up currency values - remove $ and commas
+                        if (typeof value === 'string' && value.includes('$')) {
+                            value = value.replace(/[$,]/g, '');
+                        }
+                        
+                        row[header] = value;
+                    });
+                    data.push(row);
+                }
+            }
+            
+            return data;
+        }
+
+        // Parse CSV line properly handling quoted fields
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+
+        // Process CSV data
+        function processCSVData(data) {
+            // Filter out rows 19 and 20, and remove columns H, I, K, L, M, N
+            allData = data.filter(row => {
+                // Remove rows 19 and 20 (Total row and any empty rows)
+                const accountNum = parseInt(row.Account);
+                if (isNaN(accountNum) || accountNum > 18) {
+                    return false;
+                }
+                return Object.values(row).some(val => val !== '');
+            });
+            
+            // Remove columns H, I, K, L, M, N (Dark Quant Share, Return before Fees, Investor Networth, Fund Value, Dark Quant Total Equity, Max Withdrawal Amount)
+            const columnsToRemove = ['Dark Quant Share', 'Return before Fees', 'Investor Networth', 'Fund Value', 'Dark Quant Total Equity', 'Max Withdrawal Amount', 'Max Withdrawal'];
+            
+            // Debug: Log available columns
+            if (allData.length > 0) {
+                console.log('Available columns:', Object.keys(allData[0]));
+            }
+            
+            allData = allData.map(row => {
+                const filteredRow = {};
+                Object.keys(row).forEach(key => {
+                    // Remove columns that match exact names or contain "Withdrawal"
+                    const shouldRemove = columnsToRemove.includes(key) || 
+                                       key.toLowerCase().includes('withdrawal') ||
+                                       key.toLowerCase().includes('fund value') ||
+                                       key.toLowerCase().includes('dark quant total equity');
+                    
+                    if (!shouldRemove) {
+                        filteredRow[key] = row[key];
+                    }
+                });
+                return filteredRow;
+            });
+            
+            filteredData = [...allData];
+            
+            updateKPIs();
+            renderTable();
+            hideLoading();
+        }
+
+        // Process the Cosmos data
+        function processData(table) {
+            const rows = table.rows;
+            const cols = table.cols;
+            
+            // Extract headers
+            const headers = cols.map(col => col.label);
+            
+            // Extract data rows
+            allData = rows.map(row => {
+                const rowData = {};
+                row.c.forEach((cell, index) => {
+                    rowData[headers[index]] = cell ? cell.v : '';
+                });
+                return rowData;
+            });
+
+            // Remove empty rows
+            allData = allData.filter(row => Object.values(row).some(val => val !== ''));
+
+            filteredData = [...allData];
+            
+            updateKPIs();
+            renderTable();
+            hideLoading();
+        }
+
+        // Update KPI values from specific cells
+        function updateKPIs() {
+            // Get values from specific cells (C19, D19, E19, E20)
+            const deposits = getCellValue('C19'); // Total Deposits
+            const tvl = getCellValue('D19');      // Total Value
+            const pnl = getCellValue('E19');      // Total Capital Gain
+            const growth = getCellValue('E20');   // Growth percentage
+
+            document.getElementById('deposits').textContent = formatCurrency(deposits);
+            document.getElementById('tvl').textContent = formatCurrency(tvl);
+            document.getElementById('pnl').textContent = formatCurrency(pnl);
+            document.getElementById('growth').textContent = formatPercentage(growth);
+        }
+
+        // Get value from specific cell reference
+        function getCellValue(cellRef) {
+            // Calculate totals from all data rows (excluding Total row)
+            const dataRows = allData.filter(row => row.Account !== 'Total' && row.Account !== '');
+            
+            if (cellRef === 'C19') {
+                // Total Deposits - sum all deposits
+                return dataRows.reduce((sum, row) => {
+                    const value = parseFloat(row.Deposit) || 0;
+                    return sum + value;
+                }, 0);
+            } else if (cellRef === 'D19') {
+                // Total Value - sum all values
+                return dataRows.reduce((sum, row) => {
+                    const value = parseFloat(row.Value) || 0;
+                    return sum + value;
+                }, 0);
+            } else if (cellRef === 'E19') {
+                // Total Capital Gain - sum all capital gains
+                return dataRows.reduce((sum, row) => {
+                    const value = parseFloat(row['Capital Gain']) || 0;
+                    return sum + value;
+                }, 0);
+            } else if (cellRef === 'E20') {
+                // Growth percentage - calculate from totals
+                const deposits = getCellValue('C19');
+                const tvl = getCellValue('D19');
+                if (deposits > 0) {
+                    return ((tvl - deposits) / deposits) * 100;
+                }
+                return 0;
+            }
+            
+            return 0;
+        }
+
+        // Calculate sum of a numeric column
+        function calculateColumnSum(columnName) {
+            return allData.reduce((sum, row) => {
+                let value = row[columnName];
+                
+                // Handle different value formats
+                if (typeof value === 'string') {
+                    // Remove currency symbols, commas, and percentage signs
+                    value = value.replace(/[$,%]/g, '');
+                }
+                
+                const numValue = parseFloat(value);
+                return sum + (isNaN(numValue) ? 0 : numValue);
+            }, 0);
+        }
+
+        // Format currency values
+        function formatCurrency(value) {
+            if (value === 0) return '$0.00';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        // Format percentage values
+        function formatPercentage(value) {
+            if (value === 0) return '0.00%';
+            return new Intl.NumberFormat('en-US', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value / 100);
+        }
+
+        // Render the data table
+        function renderTable() {
+            if (filteredData.length === 0) {
+                document.getElementById('tableSection').innerHTML = `
+                    <div class="status-message">
+                        No data found matching your search criteria.
+                    </div>
+                `;
+                return;
+            }
+
+            const headers = Object.keys(filteredData[0]);
+            
+            let tableHTML = `
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            filteredData.forEach(row => {
+                tableHTML += '<tr>';
+                headers.forEach(header => {
+                    const value = row[header];
+                    const cellClass = getCellClass(header, value);
+                    tableHTML += `<td class="${cellClass}">${formatCellValue(header, value)}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('tableSection').innerHTML = tableHTML;
+        }
+
+        // Create custom SVG charts
+        function createCharts() {
+            console.log('Creating SVG charts...');
+            
+            // Check if we have data
+            if (!allData || allData.length === 0) {
+                console.log('No data available for charts');
+                return;
+            }
+            
+            createFundShareChart();
+            createGainsChart();
+            console.log('SVG charts created successfully');
+        }
+
+        // Create Fund Share Distribution SVG chart
+        function createFundShareChart() {
+            const container = document.getElementById('fundShareChart');
+            if (!container) {
+                console.log('Fund share chart container not found');
+                return;
+            }
+            
+            // Filter out Total row and get top 8 accounts by fund share
+            const chartData = allData
+                .filter(row => row.Account !== 'Total' && row.Account !== '')
+                .sort((a, b) => parseFloat(b['Fund Share']) - parseFloat(a['Fund Share']))
+                .slice(0, 8);
+
+            const data = chartData.map(row => parseFloat(row['Fund Share']));
+            const labels = chartData.map(row => `Account ${row.Account}`);
+
+            // Chart dimensions
+            const width = container.clientWidth - 40;
+            const height = 260;
+            const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            // Scales
+            const maxValue = Math.max(...data);
+            const xScale = chartWidth / (data.length - 1);
+            const yScale = chartHeight / maxValue;
+
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            // Add gradient
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const gradient = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+            gradient.setAttribute('id', 'gradient1');
+            gradient.setAttribute('x1', '0%');
+            gradient.setAttribute('y1', '0%');
+            gradient.setAttribute('x2', '0%');
+            gradient.setAttribute('y2', '100%');
+            
+            const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop1.setAttribute('offset', '0%');
+            stop1.setAttribute('stop-color', '#00ff7f');
+            stop1.setAttribute('stop-opacity', '0.3');
+            
+            const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+            stop2.setAttribute('offset', '100%');
+            stop2.setAttribute('stop-color', '#00ff7f');
+            stop2.setAttribute('stop-opacity', '0');
+            
+            gradient.appendChild(stop1);
+            gradient.appendChild(stop2);
+            defs.appendChild(gradient);
+            svg.appendChild(defs);
+
+            // Add grid lines
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight / 4) * i;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', padding.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - padding.right);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'chart-grid');
+                svg.appendChild(line);
+            }
+
+            // Create area path
+            let areaPath = `M ${padding.left} ${height - padding.bottom}`;
+            data.forEach((value, index) => {
+                const x = padding.left + index * xScale;
+                const y = height - padding.bottom - value * yScale;
+                areaPath += ` L ${x} ${y}`;
+            });
+            areaPath += ` L ${padding.left + (data.length - 1) * xScale} ${height - padding.bottom} Z`;
+
+            const area = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            area.setAttribute('d', areaPath);
+            area.setAttribute('class', 'chart-area');
+            svg.appendChild(area);
+
+            // Create line path
+            let linePath = `M ${padding.left} ${height - padding.bottom - data[0] * yScale}`;
+            data.forEach((value, index) => {
+                if (index > 0) {
+                    const x = padding.left + index * xScale;
+                    const y = height - padding.bottom - value * yScale;
+                    linePath += ` L ${x} ${y}`;
+                }
+            });
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            line.setAttribute('d', linePath);
+            line.setAttribute('class', 'chart-line');
+            line.setAttribute('stroke', '#00ff7f');
+            svg.appendChild(line);
+
+            // Add points
+            data.forEach((value, index) => {
+                const x = padding.left + index * xScale;
+                const y = height - padding.bottom - value * yScale;
+                
+                const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                point.setAttribute('cx', x);
+                point.setAttribute('cy', y);
+                point.setAttribute('r', '5');
+                point.setAttribute('class', 'chart-point');
+                point.setAttribute('data-value', value.toFixed(2) + '%');
+                point.setAttribute('data-label', labels[index]);
+                
+                // Add tooltip
+                point.addEventListener('mouseenter', function() {
+                    showTooltip(this, this.getAttribute('data-label'), this.getAttribute('data-value'));
+                });
+                point.addEventListener('mouseleave', hideTooltip);
+                
+                svg.appendChild(point);
+            });
+
+            // Add labels
+            data.forEach((value, index) => {
+                const x = padding.left + index * xScale;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', height - 10);
+                text.setAttribute('class', 'chart-text');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = labels[index].replace('Account ', '');
+                svg.appendChild(text);
+            });
+
+            // Clear container and add SVG
+            container.innerHTML = '';
+            container.appendChild(svg);
+        }
+
+        // Create Capital Gains vs Deposits SVG chart
+        function createGainsChart() {
+            const container = document.getElementById('gainsChart');
+            if (!container) {
+                console.log('Gains chart container not found');
+                return;
+            }
+            
+            // Filter out Total row and get top 8 accounts
+            const chartData = allData
+                .filter(row => row.Account !== 'Total' && row.Account !== '')
+                .slice(0, 8);
+
+            const deposits = chartData.map(row => parseFloat(row.Deposit));
+            const gains = chartData.map(row => parseFloat(row['Capital Gain']));
+            const labels = chartData.map(row => `Account ${row.Account}`);
+
+            // Chart dimensions
+            const width = container.clientWidth - 40;
+            const height = 260;
+            const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            // Scales
+            const maxValue = Math.max(...deposits, ...gains);
+            const xScale = chartWidth / (deposits.length - 1);
+            const yScale = chartHeight / maxValue;
+
+            // Create SVG
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            // Add grid lines
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight / 4) * i;
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', padding.left);
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', width - padding.right);
+                line.setAttribute('y2', y);
+                line.setAttribute('class', 'chart-grid');
+                svg.appendChild(line);
+            }
+
+            // Create deposits line
+            let depositsPath = `M ${padding.left} ${height - padding.bottom - deposits[0] * yScale}`;
+            deposits.forEach((value, index) => {
+                if (index > 0) {
+                    const x = padding.left + index * xScale;
+                    const y = height - padding.bottom - value * yScale;
+                    depositsPath += ` L ${x} ${y}`;
+                }
+            });
+
+            const depositsLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            depositsLine.setAttribute('d', depositsPath);
+            depositsLine.setAttribute('class', 'chart-line');
+            depositsLine.setAttribute('stroke', '#00ff7f');
+            svg.appendChild(depositsLine);
+
+            // Create gains line
+            let gainsPath = `M ${padding.left} ${height - padding.bottom - gains[0] * yScale}`;
+            gains.forEach((value, index) => {
+                if (index > 0) {
+                    const x = padding.left + index * xScale;
+                    const y = height - padding.bottom - value * yScale;
+                    gainsPath += ` L ${x} ${y}`;
+                }
+            });
+
+            const gainsLine = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            gainsLine.setAttribute('d', gainsPath);
+            gainsLine.setAttribute('class', 'chart-line');
+            gainsLine.setAttribute('stroke', '#00d4ff');
+            svg.appendChild(gainsLine);
+
+            // Add points for deposits
+            deposits.forEach((value, index) => {
+                const x = padding.left + index * xScale;
+                const y = height - padding.bottom - value * yScale;
+                
+                const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                point.setAttribute('cx', x);
+                point.setAttribute('cy', y);
+                point.setAttribute('r', '4');
+                point.setAttribute('class', 'chart-point');
+                point.setAttribute('fill', '#00ff7f');
+                point.setAttribute('data-value', '$' + value.toLocaleString());
+                point.setAttribute('data-label', labels[index] + ' - Deposits');
+                
+                point.addEventListener('mouseenter', function() {
+                    showTooltip(this, this.getAttribute('data-label'), this.getAttribute('data-value'));
+                });
+                point.addEventListener('mouseleave', hideTooltip);
+                
+                svg.appendChild(point);
+            });
+
+            // Add points for gains
+            gains.forEach((value, index) => {
+                const x = padding.left + index * xScale;
+                const y = height - padding.bottom - value * yScale;
+                
+                const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                point.setAttribute('cx', x);
+                point.setAttribute('cy', y);
+                point.setAttribute('r', '4');
+                point.setAttribute('class', 'chart-point');
+                point.setAttribute('fill', '#00d4ff');
+                point.setAttribute('data-value', '$' + value.toLocaleString());
+                point.setAttribute('data-label', labels[index] + ' - Capital Gains');
+                
+                point.addEventListener('mouseenter', function() {
+                    showTooltip(this, this.getAttribute('data-label'), this.getAttribute('data-value'));
+                });
+                point.addEventListener('mouseleave', hideTooltip);
+                
+                svg.appendChild(point);
+            });
+
+            // Add labels
+            labels.forEach((label, index) => {
+                const x = padding.left + index * xScale;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', height - 10);
+                text.setAttribute('class', 'chart-text');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = label.replace('Account ', '');
+                svg.appendChild(text);
+            });
+
+            // Add legend
+            const legend = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            
+            const depositsLegend = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            depositsLegend.setAttribute('cx', padding.left);
+            depositsLegend.setAttribute('cy', 15);
+            depositsLegend.setAttribute('r', '4');
+            depositsLegend.setAttribute('fill', '#00ff7f');
+            legend.appendChild(depositsLegend);
+            
+            const depositsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            depositsText.setAttribute('x', padding.left + 15);
+            depositsText.setAttribute('y', 20);
+            depositsText.setAttribute('class', 'chart-text');
+            depositsText.textContent = 'Deposits';
+            legend.appendChild(depositsText);
+            
+            const gainsLegend = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            gainsLegend.setAttribute('cx', padding.left + 80);
+            gainsLegend.setAttribute('cy', 15);
+            gainsLegend.setAttribute('r', '4');
+            gainsLegend.setAttribute('fill', '#00d4ff');
+            legend.appendChild(gainsLegend);
+            
+            const gainsText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            gainsText.setAttribute('x', padding.left + 95);
+            gainsText.setAttribute('y', 20);
+            gainsText.setAttribute('class', 'chart-text');
+            gainsText.textContent = 'Capital Gains';
+            legend.appendChild(gainsText);
+            
+            svg.appendChild(legend);
+
+            // Clear container and add SVG
+            container.innerHTML = '';
+            container.appendChild(svg);
+        }
+
+        // Tooltip functions
+        function showTooltip(element, label, value) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.innerHTML = `<strong>${label}</strong><br>${value}`;
+            tooltip.style.cssText = `
+                position: absolute;
+                background: rgba(0,0,0,0.9);
+                color: #fff;
+                padding: 8px 12px;
+                border-radius: 6px;
+                border: 1px solid #00ff7f;
+                font-size: 12px;
+                pointer-events: none;
+                z-index: 1000;
+                white-space: nowrap;
+            `;
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - 40) + 'px';
+            
+            document.body.appendChild(tooltip);
+        }
+
+        function hideTooltip() {
+            const tooltips = document.querySelectorAll('.tooltip');
+            tooltips.forEach(tooltip => tooltip.remove());
+        }
+
+        // Get CSS class for cell based on column type
+        function getCellClass(header, value) {
+            const headerLower = header.toLowerCase();
+            
+            if (headerLower.includes('deposit') || headerLower.includes('value') || 
+                headerLower.includes('capital gain') || headerLower.includes('profit') ||
+                headerLower.includes('networth') || headerLower.includes('equity')) {
+                return 'currency-cell';
+            }
+            
+            if (headerLower.includes('share') || headerLower.includes('net return')) {
+                return 'percentage-cell';
+            }
+            
+            if (headerLower.includes('account') || headerLower.includes('fund')) {
+                return 'number-cell';
+            }
+            
+            return '';
+        }
+
+        // Format cell value based on column type
+        function formatCellValue(header, value) {
+            if (value === null || value === undefined || value === '') {
+                return '-';
+            }
+
+            const headerLower = header.toLowerCase();
+            
+            // Format currency columns
+            if (headerLower.includes('deposit') || headerLower.includes('value') || 
+                headerLower.includes('capital gain') || headerLower.includes('profit') ||
+                headerLower.includes('networth') || headerLower.includes('equity')) {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue)) {
+                    return formatCurrency(numValue);
+                }
+            }
+            
+            // Format percentage columns
+            if (headerLower.includes('share')) {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue)) {
+                    return numValue.toFixed(2) + '%';
+                }
+            }
+            
+            // Format Net Return as percentage (from column J)
+            if (headerLower.includes('net return')) {
+                const numValue = parseFloat(value);
+                if (!isNaN(numValue)) {
+                    return numValue.toFixed(2) + '%';
+                }
+            }
+            
+            return value.toString();
+        }
+
+
+
+        // Show error message
+        function showError(message) {
+            document.getElementById('tableSection').innerHTML = `
+                <div class="status-message error-message">
+                    ${message}
+                    <br><br>
+                    <button onclick="loadSampleData()" style="
+                        background-color: #0a0a0a;
+                        border: 2px solid #00ff7f;
+                        color: #00ff7f;
+                        padding: 10px 20px;
+                        font-family: 'Fira Code', monospace;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    ">Load Sample Data</button>
+                </div>
+            `;
+        }
+
+        // Show loading timeout message
+        function showLoadingTimeout() {
+            document.getElementById('tableSection').innerHTML = `
+                <div class="status-message">
+                    Data loading is taking longer than expected. 
+                    <br><br>
+                    <button onclick="loadSampleData()" style="
+                        background-color: #0a0a0a;
+                        border: 2px solid #00ff7f;
+                        color: #00ff7f;
+                        padding: 10px 20px;
+                        font-family: 'Fira Code', monospace;
+                        cursor: pointer;
+                        margin-top: 10px;
+                    ">Load Sample Data Now</button>
+                </div>
+            `;
+        }
+
+        // Load sample data for demonstration
+        function loadSampleData() {
+            // Reset charts flag
+            chartsCreated = false;
+            const sampleData = [
+                {
+                    "Account": "1",
+                    "Fund Share": "2.63%",
+                    "Deposit": "26779.97",
+                    "Value": "67704.67",
+                    "Capital Gain": "40924.70",
+                    "Capital Gain Cap": "20462.35",
+                    "Investor Profit": "20462.35",
+                    "Net Return": "76.41%"
+                },
+                {
+                    "Account": "2",
+                    "Fund Share": "0.41%",
+                    "Deposit": "3935.19",
+                    "Value": "10580.98",
+                    "Capital Gain": "6645.79",
+                    "Capital Gain Cap": "3322.90",
+                    "Investor Profit": "3322.90",
+                    "Net Return": "84.44%"
+                },
+                {
+                    "Account": "3",
+                    "Fund Share": "0.65%",
+                    "Deposit": "5996.56",
+                    "Value": "16707.49",
+                    "Capital Gain": "10710.93",
+                    "Capital Gain Cap": "5355.47",
+                    "Investor Profit": "5355.47",
+                    "Net Return": "89.31%"
+                },
+                {
+                    "Account": "4",
+                    "Fund Share": "0.12%",
+                    "Deposit": "1058.20",
+                    "Value": "3062.23",
+                    "Capital Gain": "2004.03",
+                    "Capital Gain Cap": "1002.02",
+                    "Investor Profit": "1002.02",
+                    "Net Return": "94.69%"
+                },
+                {
+                    "Account": "5",
+                    "Fund Share": "1.04%",
+                    "Deposit": "9259.26",
+                    "Value": "26794.41",
+                    "Capital Gain": "17535.15",
+                    "Capital Gain Cap": "8767.57",
+                    "Investor Profit": "8767.57",
+                    "Net Return": "94.69%"
+                },
+                {
+                    "Account": "6",
+                    "Fund Share": "2.06%",
+                    "Deposit": "19654.26",
+                    "Value": "52992.23",
+                    "Capital Gain": "33337.97",
+                    "Capital Gain Cap": "16668.98",
+                    "Investor Profit": "16668.98",
+                    "Net Return": "84.81%"
+                },
+                {
+                    "Account": "7",
+                    "Fund Share": "18.40%",
+                    "Deposit": "187250.00",
+                    "Value": "473165.37",
+                    "Capital Gain": "285915.37",
+                    "Capital Gain Cap": "190184.50",
+                    "Investor Profit": "190184.50",
+                    "Net Return": "101.57%"
+                },
+                {
+                    "Account": "8",
+                    "Fund Share": "1.18%",
+                    "Deposit": "12010.58",
+                    "Value": "30272.08",
+                    "Capital Gain": "18261.50",
+                    "Capital Gain Cap": "9130.75",
+                    "Investor Profit": "9130.75",
+                    "Net Return": "76.02%"
+                },
+                {
+                    "Account": "9",
+                    "Fund Share": "4.33%",
+                    "Deposit": "52178.00",
+                    "Value": "111294.53",
+                    "Capital Gain": "59116.53",
+                    "Capital Gain Cap": "29558.27",
+                    "Investor Profit": "29558.27",
+                    "Net Return": "56.65%"
+                },
+                {
+                    "Account": "10",
+                    "Fund Share": "0.41%",
+                    "Deposit": "5000.00",
+                    "Value": "10664.89",
+                    "Capital Gain": "5664.89",
+                    "Capital Gain Cap": "2832.45",
+                    "Investor Profit": "2832.45",
+                    "Net Return": "56.65%"
+                },
+                {
+                    "Account": "11",
+                    "Fund Share": "6.30%",
+                    "Deposit": "88000",
+                    "Value": "162090.52",
+                    "Capital Gain": "74090.52",
+                    "Capital Gain Cap": "17600.00",
+                    "Investor Profit": "17600.00",
+                    "Net Return": "20.00%"
+                },
+                {
+                    "Account": "12",
+                    "Fund Share": "44.00%",
+                    "Deposit": "700000.00",
+                    "Value": "1131649.62",
+                    "Capital Gain": "431649.62",
+                    "Capital Gain Cap": "215824.81",
+                    "Investor Profit": "215824.81",
+                    "Net Return": "30.83%"
+                },
+                {
+                    "Account": "13",
+                    "Fund Share": "7.69%",
+                    "Deposit": "126984.13",
+                    "Value": "197858.51",
+                    "Capital Gain": "70874.38",
+                    "Capital Gain Cap": "35437.19",
+                    "Investor Profit": "35437.19",
+                    "Net Return": "27.91%"
+                },
+                {
+                    "Account": "14",
+                    "Fund Share": "0.32%",
+                    "Deposit": "5291.01",
+                    "Value": "8194.56",
+                    "Capital Gain": "2903.56",
+                    "Capital Gain Cap": "1451.78",
+                    "Investor Profit": "1451.78",
+                    "Net Return": "27.44%"
+                },
+                {
+                    "Account": "15",
+                    "Fund Share": "7.83%",
+                    "Deposit": "160772.97",
+                    "Value": "201273.33",
+                    "Capital Gain": "40500.36",
+                    "Capital Gain Cap": "32154.59",
+                    "Investor Profit": "32154.59",
+                    "Net Return": "20.00%"
+                },
+                {
+                    "Account": "16",
+                    "Fund Share": "0.52%",
+                    "Deposit": "11904.76",
+                    "Value": "13315.88",
+                    "Capital Gain": "1411.12",
+                    "Capital Gain Cap": "705.56",
+                    "Investor Profit": "705.56",
+                    "Net Return": "5.93%"
+                },
+                {
+                    "Account": "17",
+                    "Fund Share": "2.10%",
+                    "Deposit": "52910.05",
+                    "Value": "54113.78",
+                    "Capital Gain": "1203.73",
+                    "Capital Gain Cap": "601.86",
+                    "Investor Profit": "601.86",
+                    "Net Return": "1.14%"
+                },
+                {
+                    "Account": "Total",
+                    "Fund Share": "100.00%",
+                    "Deposit": "1468984.94",
+                    "Value": "2571735.08",
+                    "Capital Gain": "1102750.14",
+                    "Capital Gain Cap": "591061.04",
+                    "Investor Profit": "511689.10",
+                    "Net Return": "75.07%"
+                }
+            ];
+
+            allData = sampleData;
+            filteredData = [...allData];
+            
+            updateKPIs();
+            renderTable();
+            hideLoading();
+            
+            // Update loading message to show it's sample data
+            document.getElementById('tableSection').innerHTML = `
+                <div class="status-message" style="color: #00ff7f; border-color: #00ff7f;">
+                    Sample data loaded successfully! (This is demonstration data from your sheet)
+                </div>
+            `;
+            
+            // Re-render table and create charts after a short delay
+            setTimeout(() => {
+                renderTable();
+                createCharts();
+            }, 2000);
+        }
+
+        // Hide loading message
+        function hideLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
